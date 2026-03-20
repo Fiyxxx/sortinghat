@@ -91,6 +91,20 @@ const config: Config = {
         'ghost-sm': '0 10px 20px rgba(0, 30, 64, 0.04)',
         'ghost-lg': '0 30px 60px rgba(0, 30, 64, 0.08)',
       },
+      spacing: {
+        'spacing-1': '0.25rem',   // 4px
+        'spacing-2': '0.5rem',    // 8px
+        'spacing-3': '0.75rem',   // 12px
+        'spacing-4': '1rem',      // 16px
+        'spacing-5': '1.25rem',   // 20px
+        'spacing-6': '1.5rem',    // 24px
+        'spacing-8': '2rem',      // 32px
+        'spacing-10': '2.5rem',   // 40px
+        'spacing-12': '3rem',     // 48px
+        'spacing-16': '4rem',     // 64px
+        'spacing-20': '5rem',     // 80px
+        'spacing-24': '6rem',     // 96px
+      },
     },
   },
   plugins: [],

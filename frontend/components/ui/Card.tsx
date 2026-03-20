@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface CardProps {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   surface?: 'lowest' | 'low' | 'default' | 'high' | 'highest';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   rounded?: 'md' | 'lg' | 'xl' | '2xl';
@@ -38,6 +38,7 @@ export default function Card({
   shadow = false,
   children,
   className = '',
+  ...rest
 }: CardProps) {
   const classes = [
     surfaceClasses[surface],
@@ -47,5 +48,5 @@ export default function Card({
     className,
   ].filter(Boolean).join(' ');
 
-  return <div className={classes}>{children}</div>;
+  return <div className={classes} {...rest}>{children}</div>;
 }

@@ -12,6 +12,7 @@ import QuizHeader from './QuizHeader';
 import PersonalitySection from './PersonalitySection';
 import PreferencesSection from './PreferencesSection';
 import AccessibilitySection from './AccessibilitySection';
+import { Button, Card } from '@/components/ui';
 
 export default function QuizForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,10 +57,10 @@ export default function QuizForm() {
     const draft = loadFormDraft();
     if (draft) {
       // Optionally show a toast asking if they want to restore
-      console.log('Draft found:', draft);
       // reset(draft); // Uncomment to auto-restore
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // reset intentionally omitted - only runs on mount
 
   const onSubmit = async (data: QuizFormData) => {
     setIsSubmitting(true);
@@ -109,94 +110,93 @@ export default function QuizForm() {
 
   if (submitSuccess) {
     return (
-      <div className="min-h-screen bg-amber-50 flex items-center justify-center p-6">
-        <div className="bg-white rounded-2xl shadow-sm p-8 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen bg-surface flex items-center justify-center p-6">
+        <Card surface="lowest" padding="lg" rounded="2xl" shadow className="max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-tertiary-fixed rounded-full flex items-center justify-center mx-auto mb-spacing-6">
+            <svg className="w-8 h-8 text-on-tertiary-fixed" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Thank you!</h2>
-          <p className="text-gray-600 mb-6">Your responses have been saved.</p>
-          <button
-            onClick={() => setSubmitSuccess(false)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-          >
+          <h2 className="text-headline-lg font-headline text-on-surface mb-spacing-2">Thank you!</h2>
+          <p className="text-body-lg text-on-surface/70 mb-spacing-8">Your responses have been saved.</p>
+          <Button variant="primary" onClick={() => setSubmitSuccess(false)} fullWidth>
             Submit Another Response
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-amber-50">
+    <div className="min-h-screen bg-surface">
       <QuizHeader
         currentSection={currentSection}
         totalSections={sections.length}
         currentSectionIndex={currentSectionIndex}
       />
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-spacing-8 sm:py-spacing-12">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-spacing-12" aria-busy={isSubmitting}>
           {/* Personality Section */}
-          <div className={currentSection === 'personality' ? 'block' : 'hidden'}>
+          <div className={currentSection === 'personality' ? 'block' : 'hidden'} aria-hidden={currentSection !== 'personality'}>
             <PersonalitySection control={control} />
           </div>
 
           {/* Preferences Section */}
-          <div className={currentSection === 'preferences' ? 'block' : 'hidden'}>
+          <div className={currentSection === 'preferences' ? 'block' : 'hidden'} aria-hidden={currentSection !== 'preferences'}>
             <PreferencesSection control={control} />
           </div>
 
           {/* Accessibility Section */}
-          <div className={currentSection === 'accessibility' ? 'block' : 'hidden'}>
+          <div className={currentSection === 'accessibility' ? 'block' : 'hidden'} aria-hidden={currentSection !== 'accessibility'}>
             <AccessibilitySection control={control} />
           </div>
 
           {/* Navigation */}
-          <div className="flex gap-4 pt-8">
+          <div className="flex gap-spacing-4 pt-spacing-8">
             {currentSectionIndex > 0 && (
-              <button
+              <Button
                 type="button"
+                variant="tertiary"
                 onClick={() => setCurrentSection(sections[currentSectionIndex - 1])}
-                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition-colors"
               >
                 ← Previous
-              </button>
+              </Button>
             )}
 
             {currentSectionIndex < sections.length - 1 ? (
-              <button
+              <Button
                 type="button"
+                variant="primary"
+                fullWidth
                 onClick={() => setCurrentSection(sections[currentSectionIndex + 1])}
-                className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
               >
                 Next →
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 type="submit"
+                variant="primary"
+                fullWidth
                 disabled={isSubmitting}
-                className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit My Responses →'}
-              </button>
+              </Button>
             )}
           </div>
 
           {/* Error Message */}
           {submitError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-800">{submitError}</p>
-            </div>
+            <Card surface="highest" padding="lg" rounded="lg" role="alert">
+              <p className="text-body-md text-on-surface font-medium">{submitError}</p>
+            </Card>
           )}
 
           {/* Validation Errors */}
           {Object.keys(errors).length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <p className="text-amber-800 font-medium">Please complete all required fields</p>
-            </div>
+            <Card surface="low" padding="md" rounded="lg" role="alert">
+              <p className="text-body-md text-on-surface font-medium">Please complete all required fields</p>
+            </Card>
           )}
         </form>
       </div>
