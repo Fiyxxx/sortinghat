@@ -10,11 +10,14 @@ interface Props {
 }
 
 export default function SelectQuestion({ question, control }: Props) {
-  // Map question options to Select component format
-  const options = question.options?.map((option) => ({
-    value: option.value,
-    label: option.label,
-  })) || [];
+  // Map question options to Select component format with placeholder
+  const options = [
+    { value: '', label: 'Select an option...' },
+    ...(question.options?.map((option) => ({
+      value: option.value,
+      label: option.label,
+    })) || [])
+  ];
 
   return (
     <Controller
@@ -28,7 +31,6 @@ export default function SelectQuestion({ question, control }: Props) {
           options={options}
           error={error?.message}
           required={question.required}
-          placeholder="Select an option..."
         />
       )}
     />

@@ -33,7 +33,7 @@ export default function SliderQuestion({ question, control }: Props) {
           <div className="space-y-4">
             {/* Design System Slider */}
             <Slider
-              value={field.value}
+              value={typeof field.value === 'number' ? field.value : (min + max) / 2}
               onChange={field.onChange}
               min={min}
               max={max}

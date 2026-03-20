@@ -10,6 +10,9 @@ interface Props {
 }
 
 export default function CheckboxQuestion({ question, control }: Props) {
+  // Checkbox is only used for requires_accessibility which maps directly to a boolean field
+  const fieldName = question.id as keyof QuizFormData;
+
   return (
     <div className="space-y-6">
       {/* Question Label */}
@@ -19,14 +22,13 @@ export default function CheckboxQuestion({ question, control }: Props) {
       </h3>
 
       <Controller
-        name={`answers.${question.id}`}
+        name={fieldName}
         control={control}
-        defaultValue={false}
         rules={{ required: question.required ? 'This field is required' : false }}
         render={({ field, fieldState: { error } }) => (
           <div className="space-y-4">
             <Checkbox
-              checked={field.value as boolean}
+              checked={!!field.value}
               onChange={field.onChange}
               aria-label={question.question}
             />

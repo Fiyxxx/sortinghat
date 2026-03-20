@@ -35,13 +35,13 @@ export default function Input({
           'ghost-border-bottom transition-all duration-200',
           'focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none',
           'disabled:opacity-50 disabled:cursor-not-allowed',
-          error && 'border-red-500',
+          error && 'border-error',
           className,
         ].filter(Boolean).join(' ')}
         {...props}
       />
       {error && (
-        <p id={errorId} className="font-body text-body-sm text-red-600">{error}</p>
+        <p id={errorId} className="font-body text-body-sm text-error">{error}</p>
       )}
       {helperText && !error && (
         <p id={helperTextId} className="font-body text-body-sm text-on-surface/60">{helperText}</p>

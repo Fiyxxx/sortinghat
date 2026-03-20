@@ -2,8 +2,10 @@
 
 import { Chip } from '@/components/ui';
 
+type SectionKey = 'personality' | 'preferences' | 'accessibility';
+
 interface QuizHeaderProps {
-  currentSection: string;
+  currentSection: SectionKey;
   totalSections: number;
   currentSectionIndex: number;
 }
@@ -11,7 +13,6 @@ interface QuizHeaderProps {
 export default function QuizHeader({ currentSection, totalSections, currentSectionIndex }: QuizHeaderProps) {
   const progress = ((currentSectionIndex + 1) / totalSections) * 100;
 
-  type SectionKey = 'personality' | 'preferences' | 'accessibility';
   const sectionNames: Record<SectionKey, string> = {
     'personality': 'Personality Questions',
     'preferences': 'Preferences',
