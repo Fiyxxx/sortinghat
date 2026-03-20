@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), 'Plus Jakarta Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), 'Manrope', sans-serif;
+}
+
+@layer utilities {
+  /* Ghost Border - 20% opacity outline-variant */
+  .ghost-border-bottom {
+    border-bottom: 1px solid rgb(195 198 209 / 0.2);
+  }
+
+  .ghost-border {
+    border: 1px solid rgb(195 198 209 / 0.2);
+  }
+
+  /* Hero Gradient - 45deg primary to primary-container */
+  .gradient-hero {
+    background: linear-gradient(45deg, #001e40 0%, #003366 100%);
+  }
+
+  /* Allocation Gradient - tertiary to secondary */
+  .gradient-allocation {
+    background: linear-gradient(90deg, #ffe088 0%, #fd8f38 100%);
+  }
+
+  /* Surface semantic helpers */
+  .surface-low {
+    background-color: #f3f4f5;
+  }
+
+  .surface-high {
+    background-color: #e1e3e4;
+  }
 }
