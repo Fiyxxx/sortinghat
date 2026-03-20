@@ -42,6 +42,12 @@ const config: Config = {
           tint: 'rgba(0, 30, 64, 0.05)',
         },
         // Semantic colors
+        error: {
+          DEFAULT: '#dc2626',
+          container: '#fee2e2',
+          light: '#ef4444',
+          dark: '#b91c1c',
+        },
         on: {
           surface: '#191c1d',
           primary: '#ffffff',
