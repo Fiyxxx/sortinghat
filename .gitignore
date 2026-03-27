@@ -1,0 +1,12 @@
+.superpowers/
+.worktrees/
+node_modules/
+.next/
+.env
+.env.local
+*.pyc
+__pycache__/
+.DS_Store
+docs/
+CLAUDE.md
+QUIZ_SPECIFICATION.md
