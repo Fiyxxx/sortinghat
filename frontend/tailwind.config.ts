@@ -59,6 +59,19 @@ const config: Config = {
           DEFAULT: '#79747E',
           variant: '#c3c6d1',
         },
+        // Warm Canvas palette
+        cream: {
+          base: '#FAF7F2',
+        },
+        'quiz-card': '#FFFFFF',
+        purple: {
+          primary: '#5B3E8F',
+          light: '#EDE6F6',
+        },
+        ink: {
+          primary: '#1A1523',
+          muted: '#7C6F8E',
+        },
       },
       fontFamily: {
         display: ['var(--font-display)', 'Manrope', 'sans-serif'],
