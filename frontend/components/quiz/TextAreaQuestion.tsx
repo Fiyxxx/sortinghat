@@ -1,9 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { QuizQuestion, QuizFormData } from '@/lib/types';
-import { useState } from 'react';
-import TextArea from '@/components/ui/TextArea';
+import { DIRECT_FIELDS } from '@/lib/quiz-config';
 
 interface Props {
   question: QuizQuestion;
@@ -12,30 +12,38 @@ interface Props {
 
 export default function TextAreaQuestion({ question, control }: Props) {
   const [charCount, setCharCount] = useState(0);
-  const recommendedLength = 250;
+  const recommended = 250;
+
+  const fieldName = DIRECT_FIELDS.has(question.id)
+    ? (question.id as keyof QuizFormData)
+    : (`answers.${question.id}` as const);
 
   return (
     <Controller
-      name={`answers.${question.id}`}
+      name={fieldName}
       control={control}
       rules={{ required: question.required ? 'Please provide an answer' : false }}
       render={({ field, fieldState: { error } }) => (
-        <div className="space-y-2">
-          <TextArea
+        <div className="bg-quiz-card rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-6">
+          <textarea
             {...field}
-            label={question.question}
-            rows={4}
-            placeholder={question.placeholder}
+            value={typeof field.value === 'string' ? field.value : ''}
             onChange={(e) => {
               field.onChange(e);
               setCharCount(e.target.value.length);
             }}
-            error={error?.message}
-            required={question.required}
+            placeholder={question.placeholder || 'Share your thoughts…'}
+            rows={4}
+            className="w-full bg-transparent resize-none outline-none text-base text-ink-primary
+                       placeholder:text-ink-muted min-h-[120px]"
+            aria-label={question.question}
           />
-
-          <div className="font-body text-body-sm text-on-surface/60">
-            {charCount} / {recommendedLength} characters {charCount < recommendedLength ? 'recommended' : ''}
+          <div className="flex justify-between items-center mt-2">
+            {error
+              ? <p className="text-sm text-red-500">{error.message}</p>
+              : <span />
+            }
+            <span className="text-xs text-ink-muted">{charCount} / {recommended}</span>
           </div>
         </div>
       )}
