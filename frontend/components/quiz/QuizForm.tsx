@@ -3,14 +3,14 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useEffect, useCallback } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { QuizFormData, StudentProfile } from '@/lib/types';
 import { quizFormSchema } from '@/lib/validation';
 import { computePersonalityScores } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
 import { saveFormDraft, clearFormDraft } from '@/lib/form-storage';
-import { quizQuestions } from '@/lib/quiz-config';
+import { quizQuestions, DIRECT_FIELDS } from '@/lib/quiz-config';
 import QuizHeader from './QuizHeader';
 import QuizScreen from './QuizScreen';
 import SectionInterstitial from './SectionInterstitial';
@@ -59,6 +59,7 @@ export default function QuizForm() {
   const isAnswered = (() => {
     const q = currentQuestion;
     if (q.type === 'multiple_choice') return !!watchedAnswers?.[q.id];
+    // select fields always bind to top-level QuizFormData keys (see DIRECT_FIELDS in quiz-config)
     if (q.type === 'select') return !!(watchedAll as Record<string, unknown>)[q.id];
     if (q.type === 'slider') return true;
     if (q.type === 'text') return true;
@@ -123,7 +124,12 @@ export default function QuizForm() {
 
   if (submitSuccess) {
     return (
-      <div className="min-h-screen bg-cream-base flex flex-col items-center justify-center px-6">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="min-h-screen bg-cream-base flex flex-col items-center justify-center px-6"
+      >
         <Image src="/sorting-hat.png" alt="Sorting Hat" width={80} height={80} className="mb-6" />
         <h2
           className="text-[1.75rem] italic text-ink-primary text-center mb-3"
@@ -134,7 +140,7 @@ export default function QuizForm() {
         <p className="text-sm text-ink-muted text-center">
           Your responses have been saved. You&apos;ll hear from us soon.
         </p>
-      </div>
+      </motion.div>
     );
   }
 
