@@ -35,7 +35,7 @@ export default function TextAreaQuestion({ question, control }: Props) {
             placeholder={question.placeholder || 'Share your thoughts…'}
             rows={4}
             className="w-full bg-transparent resize-none outline-none text-base text-ink-primary
-                       placeholder:text-ink-muted min-h-[120px]"
+                       placeholder:text-ink-muted min-h-[120px] focus:ring-1 focus:ring-purple-primary/40"
             aria-label={question.question}
           />
           <div className="flex justify-between items-center mt-2">
