@@ -30,7 +30,7 @@ export default function QuizHeader({ currentIndex, totalQuestions }: QuizHeaderP
         {/* Fill */}
         <div
           className="absolute left-0 top-0 h-full bg-purple-primary transition-all duration-300 ease-out"
-          style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
+          style={{ width: `${(currentIndex / (totalQuestions - 1)) * 100}%` }}
         />
         {/* Hat tracker */}
         <div
