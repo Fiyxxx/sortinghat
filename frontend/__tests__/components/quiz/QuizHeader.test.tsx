@@ -21,6 +21,7 @@ describe('QuizHeader', () => {
     render(<QuizHeader currentIndex={5} totalQuestions={12} />);
     const bar = screen.getByRole('progressbar');
     expect(bar).toHaveAttribute('aria-valuenow', '6');
+    expect(bar).toHaveAttribute('aria-valuemin', '1');
     expect(bar).toHaveAttribute('aria-valuemax', '12');
   });
 });
