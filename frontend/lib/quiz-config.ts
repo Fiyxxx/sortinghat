@@ -238,3 +238,15 @@ export function getQuestionById(id: string) {
 // - preference-questions.ts
 // - accessibility-questions.ts
 // Or migrating to database-driven questions (see spec: Future Enhancement section).
+
+// Fields that bind directly to QuizFormData top-level (not nested under answers)
+export const DIRECT_FIELDS = new Set<string>([
+  'room_type_preference',
+  'gender_floor_preference',
+  'sleep_schedule',
+  'noise_tolerance',
+  'aircon_usage',
+  'hope_to_experience',
+  'floor_event_idea',
+  'requires_accessibility',
+]);
