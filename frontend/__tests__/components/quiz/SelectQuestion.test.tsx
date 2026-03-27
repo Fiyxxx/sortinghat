@@ -39,4 +39,12 @@ describe('SelectQuestion', () => {
     fireEvent.click(screen.getByText('Single room'));
     expect(screen.getByText('Single room').closest('button')).toHaveClass('bg-purple-primary');
   });
+
+  it('toggles aria-pressed when option clicked', () => {
+    render(<TestWrapper question={mockSelect} />);
+    const button = screen.getByText('Single room').closest('button')!;
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(button);
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+  });
 });
