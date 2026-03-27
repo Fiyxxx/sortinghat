@@ -1,58 +1,56 @@
 'use client';
 
-import { Chip } from '@/components/ui';
-
-type SectionKey = 'personality' | 'preferences' | 'accessibility';
+import Image from 'next/image';
 
 interface QuizHeaderProps {
-  currentSection: SectionKey;
-  totalSections: number;
-  currentSectionIndex: number;
+  currentIndex: number;   // 0-based question index
+  totalQuestions: number; // 12
 }
 
-export default function QuizHeader({ currentSection, totalSections, currentSectionIndex }: QuizHeaderProps) {
-  const progress = ((currentSectionIndex + 1) / totalSections) * 100;
-
-  const sectionNames: Record<SectionKey, string> = {
-    'personality': 'Personality Questions',
-    'preferences': 'Preferences',
-    'accessibility': 'Accessibility & Special Considerations'
-  };
+export default function QuizHeader({ currentIndex, totalQuestions }: QuizHeaderProps) {
+  const rawPercent = currentIndex / (totalQuestions - 1);
+  const hatLeftStyle =
+    currentIndex === 0
+      ? '0px'
+      : currentIndex === totalQuestions - 1
+      ? 'calc(100% - 28px)'
+      : `calc(${rawPercent * 100}% - 14px)`;
 
   return (
-    <header className="sticky top-0 z-10 bg-surface-container-lowest px-spacing-4 sm:px-spacing-6 py-spacing-4 sm:py-spacing-6">
-      <div className="max-w-2xl mx-auto">
-        {/* Title and Progress Counter */}
-        <div className="flex items-center justify-between mb-spacing-4">
-          <h1 className="font-display text-headline-sm sm:text-headline-md tracking-tight text-on-surface">
-            Sorting Hat
-          </h1>
-          <Chip variant="status">
-            {currentSectionIndex + 1} of {totalSections}
-          </Chip>
-        </div>
-
-        {/* Current Section Name */}
-        <h2 className="text-title-lg sm:text-headline-sm text-primary mb-spacing-4 sm:mb-spacing-5">
-          {sectionNames[currentSection] || currentSection}
-        </h2>
-
-        {/* Progress Bar */}
+    <div className="fixed top-0 left-0 right-0 z-20 px-6">
+      <div
+        className="relative w-full bg-purple-light"
+        style={{ height: '4px' }}
+        role="progressbar"
+        aria-valuenow={currentIndex + 1}
+        aria-valuemin={1}
+        aria-valuemax={totalQuestions}
+        aria-label={`Question ${currentIndex + 1} of ${totalQuestions}`}
+      >
+        {/* Fill */}
         <div
-          className="w-full bg-surface-container-high rounded-full h-1.5 sm:h-2 overflow-hidden"
-          role="progressbar"
-          aria-valuenow={Math.round(progress)}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`Quiz progress: ${Math.round(progress)}% complete`}
-          aria-live="polite"
+          className="absolute left-0 top-0 h-full bg-purple-primary transition-all duration-300 ease-out"
+          style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
+        />
+        {/* Hat tracker */}
+        <div
+          className="absolute -top-3 transition-[left] duration-300 ease-out"
+          style={{ left: hatLeftStyle }}
         >
-          <div
-            className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
-            style={{ width: `${progress}%` }}
+          <Image
+            src="/sorting-hat.png"
+            alt="progress tracker"
+            width={28}
+            height={28}
+            className="select-none"
           />
         </div>
       </div>
-    </header>
+      <div className="flex justify-end mt-1">
+        <span className="text-sm font-medium text-ink-muted" aria-hidden="true">
+          {currentIndex + 1} / {totalQuestions}
+        </span>
+      </div>
+    </div>
   );
 }
