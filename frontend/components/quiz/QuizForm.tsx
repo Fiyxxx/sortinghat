@@ -60,7 +60,7 @@ export default function QuizForm() {
     const q = currentQuestion;
     if (q.type === 'multiple_choice') return !!watchedAnswers?.[q.id];
     // select fields always bind to top-level QuizFormData keys (see DIRECT_FIELDS in quiz-config)
-    if (q.type === 'select') return !!(watchedAll as Record<string, unknown>)[q.id];
+    if (q.type === 'select') return !!(watchedAll as unknown as Record<string, unknown>)[q.id];
     if (q.type === 'slider') return true;
     if (q.type === 'text') return true;
     if (q.type === 'checkbox') return true;
