@@ -2,7 +2,7 @@
 
 import { Control, Controller } from 'react-hook-form';
 import { QuizQuestion, QuizFormData } from '@/lib/types';
-import Slider from '@/components/ui/Slider';
+import { DIRECT_FIELDS } from '@/lib/quiz-config';
 
 interface Props {
   question: QuizQuestion;
@@ -10,59 +10,70 @@ interface Props {
 }
 
 export default function SliderQuestion({ question, control }: Props) {
-  if (!question.sliderConfig) {
-    throw new Error('SliderQuestion requires sliderConfig');
-  }
-
+  if (!question.sliderConfig) throw new Error('SliderQuestion requires sliderConfig');
   const { min, max, step, leftLabel, rightLabel } = question.sliderConfig;
 
+  const fieldName = DIRECT_FIELDS.has(question.id)
+    ? (question.id as keyof QuizFormData)
+    : (`answers.${question.id}` as const);
+
   return (
-    <div className="space-y-6">
-      {/* Question Label */}
-      <h3 className="font-display text-title-md text-on-surface">
-        {question.question}
-        {question.required && <span className="text-error ml-1">*</span>}
-      </h3>
+    <Controller
+      name={fieldName}
+      control={control}
+      defaultValue={(min + max) / 2}
+      rules={{ required: question.required ? 'Please select a value' : false }}
+      render={({ field, fieldState: { error } }) => {
+        const value = typeof field.value === 'number' ? field.value : (min + max) / 2;
+        const percent = ((value - min) / (max - min)) * 100;
 
-      <Controller
-        name={`answers.${question.id}`}
-        control={control}
-        defaultValue={(min + max) / 2}
-        rules={{ required: question.required ? 'Please select a value' : false }}
-        render={({ field, fieldState: { error } }) => (
-          <div className="space-y-4">
-            {/* Design System Slider */}
-            <Slider
-              value={typeof field.value === 'number' ? field.value : (min + max) / 2}
-              onChange={field.onChange}
-              min={min}
-              max={max}
-              step={step}
-              label={question.question}
-              showValue={true}
-              valueFormatter={(value) => {
-                const percentage = ((value - min) / (max - min)) * 100;
-                return `${Math.round(percentage)}%`;
-              }}
-            />
+        return (
+          <div className="bg-quiz-card rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.07)] p-6">
+            <div className="relative pt-8">
+              {/* Value pill above thumb */}
+              <div
+                className="absolute top-0 pointer-events-none"
+                style={{ left: `calc(${percent}% - 20px)`, width: '40px' }}
+              >
+                <span className="block text-center bg-purple-primary text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                  {Math.round(percent)}%
+                </span>
+              </div>
 
-            {/* Left/Right Labels */}
-            <div className="flex justify-between items-center gap-4">
-              <span className="font-body text-body-sm text-on-surface/60 text-left flex-1">
-                {leftLabel}
-              </span>
-              <span className="font-body text-body-sm text-on-surface/60 text-right flex-1">
-                {rightLabel}
-              </span>
+              {/* Track */}
+              <div className="relative h-1 bg-purple-light rounded-full">
+                <div
+                  className="absolute left-0 top-0 h-full bg-purple-primary rounded-full"
+                  style={{ width: `${percent}%` }}
+                />
+                {/* Invisible wide hit-target input */}
+                <input
+                  type="range"
+                  min={min}
+                  max={max}
+                  step={step}
+                  value={value}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  className="absolute inset-0 w-full opacity-0 cursor-pointer h-full"
+                  aria-label={question.question}
+                />
+                {/* Visible thumb */}
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-purple-primary rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.12)] pointer-events-none"
+                  style={{ left: `calc(${percent}% - 10px)` }}
+                />
+              </div>
             </div>
 
-            {/* Error Message */}
-            {error && (
-              <p className="font-body text-label-sm text-error">{error.message}</p>
-            )}
+            <div className="flex justify-between mt-4">
+              <span className="text-xs text-ink-muted">{leftLabel}</span>
+              <span className="text-xs text-ink-muted">{rightLabel}</span>
+            </div>
+
+            {error && <p className="text-sm text-red-500 mt-2">{error.message}</p>}
           </div>
-        )}
-      />
-    </div>
+        );
+      }}
+    />
   );
 }
