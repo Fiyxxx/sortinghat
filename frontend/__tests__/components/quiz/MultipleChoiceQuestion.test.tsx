@@ -23,23 +23,11 @@ describe('MultipleChoiceQuestion', () => {
     ]
   };
 
-  it('renders question text', () => {
-    render(<TestWrapper question={mockQuestion} />);
-    expect(screen.getByText('What is your favorite color?')).toBeInTheDocument();
-  });
-
   it('renders all options', () => {
     render(<TestWrapper question={mockQuestion} />);
     expect(screen.getByText('Red')).toBeInTheDocument();
     expect(screen.getByText('Blue')).toBeInTheDocument();
     expect(screen.getByText('Green')).toBeInTheDocument();
-  });
-
-  it('allows selecting an option', () => {
-    render(<TestWrapper question={mockQuestion} />);
-    const redButton = screen.getByText('Red');
-    fireEvent.click(redButton);
-    // Visual feedback test would go here (checking for selected state)
   });
 
   it('applies selected styles when option is chosen', () => {
@@ -53,5 +41,13 @@ describe('MultipleChoiceQuestion', () => {
     render(<TestWrapper question={mockQuestion} />);
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     expect(screen.getAllByRole('button').length).toBe(3);
+  });
+
+  it('sets aria-pressed on selected option', () => {
+    render(<TestWrapper question={mockQuestion} />);
+    const redButton = screen.getByText('Red').closest('button')!;
+    expect(redButton).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(redButton);
+    expect(redButton).toHaveAttribute('aria-pressed', 'true');
   });
 });

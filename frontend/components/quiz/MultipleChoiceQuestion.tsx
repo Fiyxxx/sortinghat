@@ -10,12 +10,7 @@ interface Props {
 
 export default function MultipleChoiceQuestion({ question, control }: Props) {
   return (
-    <div className="space-y-6">
-      <h3 className="font-display text-title-md text-ink-primary">
-        {question.question}
-        {question.required && <span className="text-red-500 ml-1">*</span>}
-      </h3>
-      <Controller
+    <Controller
       name={`answers.${question.id}`}
       control={control}
       rules={{ required: question.required ? 'Please select an option' : false }}
@@ -27,6 +22,7 @@ export default function MultipleChoiceQuestion({ question, control }: Props) {
               <button
                 key={option.value}
                 type="button"
+                aria-pressed={selected}
                 onClick={() => field.onChange(option.value)}
                 className={[
                   'w-full text-left px-5 py-4 rounded-2xl transition-all duration-150',
@@ -44,6 +40,5 @@ export default function MultipleChoiceQuestion({ question, control }: Props) {
         </div>
       )}
     />
-    </div>
   );
 }
