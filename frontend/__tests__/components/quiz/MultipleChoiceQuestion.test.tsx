@@ -41,4 +41,17 @@ describe('MultipleChoiceQuestion', () => {
     fireEvent.click(redButton);
     // Visual feedback test would go here (checking for selected state)
   });
+
+  it('applies selected styles when option is chosen', () => {
+    render(<TestWrapper question={mockQuestion} />);
+    const redButton = screen.getByText('Red');
+    fireEvent.click(redButton);
+    expect(redButton.closest('button')).toHaveClass('bg-purple-primary');
+  });
+
+  it('renders options as buttons, not radio inputs', () => {
+    render(<TestWrapper question={mockQuestion} />);
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button').length).toBe(3);
+  });
 });
