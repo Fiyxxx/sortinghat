@@ -2,34 +2,37 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { QuizFormData, StudentProfile } from '@/lib/types';
 import { quizFormSchema } from '@/lib/validation';
 import { computePersonalityScores } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
-import { saveFormDraft, loadFormDraft, clearFormDraft } from '@/lib/form-storage';
+import { saveFormDraft, clearFormDraft } from '@/lib/form-storage';
+import { quizQuestions } from '@/lib/quiz-config';
 import QuizHeader from './QuizHeader';
-import PersonalitySection from './PersonalitySection';
-import PreferencesSection from './PreferencesSection';
-import AccessibilitySection from './AccessibilitySection';
-import { Button, Card } from '@/components/ui';
+import QuizScreen from './QuizScreen';
+import SectionInterstitial from './SectionInterstitial';
+
+type InterstitialKey = 'personality-to-preferences' | 'preferences-to-accessibility';
+
+const INTERSTITIAL_AFTER: Record<number, InterstitialKey> = {
+  5: 'personality-to-preferences',
+  10: 'preferences-to-accessibility',
+};
+
+const TOTAL = quizQuestions.length; // 12
 
 export default function QuizForm() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [interstitial, setInterstitial] = useState<InterstitialKey | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [currentSection, setCurrentSection] = useState<'personality' | 'preferences' | 'accessibility'>('personality');
 
-  const sections = ['personality', 'preferences', 'accessibility'] as const;
-  const currentSectionIndex = sections.indexOf(currentSection);
-
-  const {
-    control,
-    handleSubmit,
-    reset,
-    watch,
-    formState: { errors }
-  } = useForm<QuizFormData>({
+  const { control, handleSubmit, reset, watch } = useForm<QuizFormData>({
     resolver: zodResolver(quizFormSchema),
     defaultValues: {
       answers: {},
@@ -40,37 +43,55 @@ export default function QuizForm() {
       aircon_usage: '',
       hope_to_experience: '',
       floor_event_idea: '',
-      requires_accessibility: false
-    }
+      requires_accessibility: false,
+    },
   });
 
-  // Watch form changes and save to localStorage
   useEffect(() => {
-    const subscription = watch((data) => {
-      saveFormDraft(data);
-    });
-    return () => subscription.unsubscribe();
+    const sub = watch((data) => saveFormDraft(data));
+    return () => sub.unsubscribe();
   }, [watch]);
 
-  // Load draft on mount
-  useEffect(() => {
-    const draft = loadFormDraft();
-    if (draft) {
-      // Optionally show a toast asking if they want to restore
-      // reset(draft); // Uncomment to auto-restore
+  const currentQuestion = quizQuestions[currentIndex];
+  const watchedAnswers = watch('answers');
+  const watchedAll = watch();
+
+  const isAnswered = (() => {
+    const q = currentQuestion;
+    if (q.type === 'multiple_choice') return !!watchedAnswers?.[q.id];
+    if (q.type === 'select') return !!(watchedAll as Record<string, unknown>)[q.id];
+    if (q.type === 'slider') return true;
+    if (q.type === 'text') return true;
+    if (q.type === 'checkbox') return true;
+    return false;
+  })();
+
+  const goNext = useCallback(() => {
+    if (INTERSTITIAL_AFTER[currentIndex] != null) {
+      setDirection(1);
+      setInterstitial(INTERSTITIAL_AFTER[currentIndex]);
+    } else {
+      setDirection(1);
+      setCurrentIndex((i) => i + 1);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // reset intentionally omitted - only runs on mount
+  }, [currentIndex]);
+
+  const goBack = useCallback(() => {
+    setDirection(-1);
+    setCurrentIndex((i) => Math.max(0, i - 1));
+  }, []);
+
+  const onInterstitialComplete = useCallback(() => {
+    setInterstitial(null);
+    setDirection(1);
+    setCurrentIndex((i) => i + 1);
+  }, []);
 
   const onSubmit = async (data: QuizFormData) => {
     setIsSubmitting(true);
     setSubmitError(null);
-
     try {
-      // 1. Compute personality scores from answers
       const scores = computePersonalityScores(data.answers);
-
-      // 2. Extract values from form data
       const payload: StudentProfile = {
         extraversion: scores.extraversion,
         openness: scores.openness,
@@ -85,24 +106,16 @@ export default function QuizForm() {
         hope_to_experience: data.hope_to_experience || null,
         floor_event_idea: data.floor_event_idea || null,
         requires_accessibility: data.requires_accessibility || false,
-        raw_responses: data.answers
+        raw_responses: data.answers,
       };
-
-      // 3. Insert into Supabase
-      const { error } = await supabase
-        .from('student_profiles')
-        .insert(payload);
-
+      const { error } = await supabase.from('student_profiles').insert(payload);
       if (error) throw error;
-
-      // 4. Show success
       setSubmitSuccess(true);
       reset();
       clearFormDraft();
-
-    } catch (error: any) {
-      console.error('Submission error:', error);
-      setSubmitError(error.message || 'Failed to submit quiz. Please try again.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to submit. Please try again.';
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -110,96 +123,97 @@ export default function QuizForm() {
 
   if (submitSuccess) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center p-6">
-        <Card surface="lowest" padding="lg" rounded="2xl" shadow className="max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-tertiary-fixed rounded-full flex items-center justify-center mx-auto mb-spacing-6">
-            <svg className="w-8 h-8 text-on-tertiary-fixed" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h2 className="text-headline-lg font-headline text-on-surface mb-spacing-2">Thank you!</h2>
-          <p className="text-body-lg text-on-surface/70 mb-spacing-8">Your responses have been saved.</p>
-          <Button variant="primary" onClick={() => setSubmitSuccess(false)} fullWidth>
-            Submit Another Response
-          </Button>
-        </Card>
+      <div className="min-h-screen bg-cream-base flex flex-col items-center justify-center px-6">
+        <Image src="/sorting-hat.png" alt="Sorting Hat" width={80} height={80} className="mb-6" />
+        <h2
+          className="text-[1.75rem] italic text-ink-primary text-center mb-3"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          You&apos;re all set!
+        </h2>
+        <p className="text-sm text-ink-muted text-center">
+          Your responses have been saved. You&apos;ll hear from us soon.
+        </p>
       </div>
     );
   }
 
+  const isLastQuestion = currentIndex === TOTAL - 1;
+
   return (
-    <div className="min-h-screen bg-surface">
-      <QuizHeader
-        currentSection={currentSection}
-        totalSections={sections.length}
-        currentSectionIndex={currentSectionIndex}
-      />
+    <div className="min-h-screen bg-cream-base overflow-hidden">
+      {!interstitial && (
+        <QuizHeader currentIndex={currentIndex} totalQuestions={TOTAL} />
+      )}
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-spacing-8 sm:py-spacing-12">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-spacing-12" aria-busy={isSubmitting}>
-          {/* Personality Section */}
-          <div className={currentSection === 'personality' ? 'block' : 'hidden'} aria-hidden={currentSection !== 'personality'}>
-            <PersonalitySection control={control} />
-          </div>
+      <AnimatePresence>
+        {interstitial && (
+          <SectionInterstitial
+            key={interstitial}
+            trigger={interstitial}
+            onComplete={onInterstitialComplete}
+          />
+        )}
+      </AnimatePresence>
 
-          {/* Preferences Section */}
-          <div className={currentSection === 'preferences' ? 'block' : 'hidden'} aria-hidden={currentSection !== 'preferences'}>
-            <PreferencesSection control={control} />
-          </div>
+      {!interstitial && (
+        <AnimatePresence mode="wait" custom={direction}>
+          <QuizScreen
+            key={currentIndex}
+            question={currentQuestion}
+            control={control}
+            direction={direction}
+          />
+        </AnimatePresence>
+      )}
 
-          {/* Accessibility Section */}
-          <div className={currentSection === 'accessibility' ? 'block' : 'hidden'} aria-hidden={currentSection !== 'accessibility'}>
-            <AccessibilitySection control={control} />
-          </div>
-
-          {/* Navigation */}
-          <div className="flex gap-spacing-4 pt-spacing-8">
-            {currentSectionIndex > 0 && (
-              <Button
+      {!interstitial && (
+        <div className="fixed bottom-0 left-0 right-0 px-6 pb-6 backdrop-blur-sm bg-cream-base/80">
+          {submitError && (
+            <p className="text-sm text-red-500 text-center mb-3">{submitError}</p>
+          )}
+          <div className="flex gap-3">
+            {currentIndex > 0 && (
+              <button
                 type="button"
-                variant="tertiary"
-                onClick={() => setCurrentSection(sections[currentSectionIndex - 1])}
+                onClick={goBack}
+                className="px-6 h-14 rounded-full bg-purple-light text-ink-muted font-semibold text-base"
               >
-                ← Previous
-              </Button>
+                ← Back
+              </button>
             )}
-
-            {currentSectionIndex < sections.length - 1 ? (
-              <Button
+            {isLastQuestion ? (
+              <button
                 type="button"
-                variant="primary"
-                fullWidth
-                onClick={() => setCurrentSection(sections[currentSectionIndex + 1])}
+                onClick={handleSubmit(onSubmit)}
+                disabled={isSubmitting || !isAnswered}
+                className={[
+                  'flex-1 h-14 rounded-full font-semibold text-base transition-colors',
+                  isSubmitting || !isAnswered
+                    ? 'bg-purple-light text-ink-muted cursor-not-allowed'
+                    : 'bg-purple-primary text-white',
+                ].join(' ')}
+              >
+                {isSubmitting ? 'Submitting…' : 'Submit →'}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={goNext}
+                disabled={!isAnswered}
+                className={[
+                  'flex-1 h-14 rounded-full font-semibold text-base transition-colors',
+                  !isAnswered
+                    ? 'bg-purple-light text-ink-muted cursor-not-allowed'
+                    : 'bg-purple-primary text-white',
+                ].join(' ')}
               >
                 Next →
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit My Responses →'}
-              </Button>
+              </button>
             )}
           </div>
-
-          {/* Error Message */}
-          {submitError && (
-            <Card surface="highest" padding="lg" rounded="lg" role="alert">
-              <p className="text-body-md text-on-surface font-medium">{submitError}</p>
-            </Card>
-          )}
-
-          {/* Validation Errors */}
-          {Object.keys(errors).length > 0 && (
-            <Card surface="low" padding="md" rounded="lg" role="alert">
-              <p className="text-body-md text-on-surface font-medium">Please complete all required fields</p>
-            </Card>
-          )}
-        </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
