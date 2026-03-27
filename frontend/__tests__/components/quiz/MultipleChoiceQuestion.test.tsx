@@ -1,11 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useForm } from 'react-hook-form';
 import MultipleChoiceQuestion from '@/components/quiz/MultipleChoiceQuestion';
-import { QuizQuestion } from '@/lib/types';
+import { QuizQuestion, QuizFormData } from '@/lib/types';
 
 // Wrapper component to provide form context
 function TestWrapper({ question }: { question: QuizQuestion }) {
-  const { control } = useForm();
+  const { control } = useForm<QuizFormData>();
   return <MultipleChoiceQuestion question={question} control={control} />;
 }
 
