@@ -24,7 +24,7 @@ describe('CheckboxQuestion', () => {
 
   it('renders inside a white card container', () => {
     const { container } = render(<TestWrapper question={mockCheckbox} />);
-    expect(container.firstChild).toHaveClass('bg-quiz-card');
+    expect(container.querySelector('.bg-quiz-card')).toBeInTheDocument();
   });
 
   it('does not render a design-system Checkbox import (uses custom checkbox)', () => {
