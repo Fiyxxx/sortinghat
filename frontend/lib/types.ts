@@ -54,8 +54,6 @@ export interface QuizFormData {
   room_type_preference: string;
   gender_floor_preference: string;
   sleep_schedule: number;
-  noise_tolerance: number;
-  aircon_usage: string;
 
   // Open-ended
   hope_to_experience?: string;
@@ -67,6 +65,13 @@ export interface QuizFormData {
 
 // Database payload
 export interface StudentProfile {
+  // Identity
+  nus_id: string;
+
+  // Admissions data (pre-filled, not from quiz)
+  faculty: string;
+  race: string;
+
   // Personality scores
   extraversion: number;
   openness: number;
@@ -78,8 +83,6 @@ export interface StudentProfile {
   room_type_preference: string;
   gender_floor_preference: string;
   sleep_schedule: number;
-  noise_tolerance: number;
-  aircon_usage: string;
 
   // Open-ended
   hope_to_experience: string | null;

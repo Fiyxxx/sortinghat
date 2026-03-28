@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  /* Warm Canvas palette */
+  --color-cream-base: #FAF7F2;
+  --color-quiz-card: #FFFFFF;
+  --color-purple-primary: #5B3E8F;
+  --color-purple-light: #EDE6F6;
+  --color-ink-primary: #1A1523;
+  --color-ink-muted: #7C6F8E;
+}
+
 body {
   font-family: var(--font-body), 'Plus Jakarta Sans', sans-serif;
 }

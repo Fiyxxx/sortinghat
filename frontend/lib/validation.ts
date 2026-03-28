@@ -11,8 +11,6 @@ export const quizFormSchema = z.object({
   room_type_preference: z.string().min(1, 'Please select a room type'),
   gender_floor_preference: z.string().min(1, 'Please select a preference'),
   sleep_schedule: z.number().min(0).max(1),
-  noise_tolerance: z.number().min(0).max(1),
-  aircon_usage: z.string().min(1, 'Please select an option'),
 
   // Open-ended - optional
   hope_to_experience: z.string().optional(),

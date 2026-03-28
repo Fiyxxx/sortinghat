@@ -30,7 +30,7 @@ export default function SelectQuestion({ question, control }: Props) {
                 aria-pressed={selected}
                 className={[
                   'w-full text-left px-5 py-4 rounded-2xl transition-all duration-150',
-                  'text-base font-medium shadow-[0_2px_12px_rgba(0,0,0,0.07)]',
+                  'text-xl font-medium shadow-[0_2px_12px_rgba(0,0,0,0.07)]',
                   selected
                     ? 'bg-purple-primary text-white scale-[1.02]'
                     : 'bg-quiz-card text-ink-primary hover:bg-purple-light/40',

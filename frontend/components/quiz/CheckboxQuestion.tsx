@@ -40,7 +40,7 @@ export default function CheckboxQuestion({ question, control }: Props) {
               )}
             </div>
 
-            <span className="text-base font-medium text-ink-primary flex-1">
+            <span className="text-xl font-medium text-ink-primary flex-1">
               {question.question}
             </span>
 

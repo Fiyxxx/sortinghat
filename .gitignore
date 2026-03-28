@@ -10,3 +10,5 @@ __pycache__/
 docs/
 CLAUDE.md
 QUIZ_SPECIFICATION.md
+design/
+database/

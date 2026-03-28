@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { QuizFormData, StudentProfile } from '@/lib/types';
 import { quizFormSchema } from '@/lib/validation';
 import { computePersonalityScores } from '@/lib/scoring';
@@ -19,12 +20,19 @@ type InterstitialKey = 'personality-to-preferences' | 'preferences-to-accessibil
 
 const INTERSTITIAL_AFTER: Record<number, InterstitialKey> = {
   5: 'personality-to-preferences',
-  10: 'preferences-to-accessibility',
+  8: 'preferences-to-accessibility',
 };
 
 const TOTAL = quizQuestions.length; // 12
 
-export default function QuizForm() {
+interface QuizFormProps {
+  nusId:   string;
+  faculty: string;
+  race:    string;
+}
+
+export default function QuizForm({ nusId, faculty, race }: QuizFormProps) {
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [interstitial, setInterstitial] = useState<InterstitialKey | null>(null);
@@ -39,8 +47,6 @@ export default function QuizForm() {
       room_type_preference: '',
       gender_floor_preference: '',
       sleep_schedule: 0.5,
-      noise_tolerance: 0.5,
-      aircon_usage: '',
       hope_to_experience: '',
       floor_event_idea: '',
       requires_accessibility: false,
@@ -94,6 +100,9 @@ export default function QuizForm() {
     try {
       const scores = computePersonalityScores(data.answers);
       const payload: StudentProfile = {
+        nus_id: nusId,
+        faculty,
+        race,
         extraversion: scores.extraversion,
         openness: scores.openness,
         agreeableness: scores.agreeableness,
@@ -102,8 +111,6 @@ export default function QuizForm() {
         room_type_preference: data.room_type_preference,
         gender_floor_preference: data.gender_floor_preference,
         sleep_schedule: data.sleep_schedule,
-        noise_tolerance: data.noise_tolerance,
-        aircon_usage: data.aircon_usage,
         hope_to_experience: data.hope_to_experience || null,
         floor_event_idea: data.floor_event_idea || null,
         requires_accessibility: data.requires_accessibility || false,
@@ -115,12 +122,35 @@ export default function QuizForm() {
       reset();
       clearFormDraft();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to submit. Please try again.';
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+          ? String((err as { message: unknown }).message)
+          : 'Failed to submit. Please try again.';
       setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const isLastQuestion = currentIndex === TOTAL - 1;
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Enter') return;
+      if (interstitial || !isAnswered || isSubmitting) return;
+      if ((e.target as HTMLElement).tagName === 'TEXTAREA') return;
+      e.preventDefault();
+      if (isLastQuestion) {
+        handleSubmit(onSubmit)();
+      } else {
+        goNext();
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [interstitial, isAnswered, isSubmitting, isLastQuestion, goNext, handleSubmit, onSubmit]);
 
   if (submitSuccess) {
     return (
@@ -130,21 +160,26 @@ export default function QuizForm() {
         transition={{ duration: 0.4 }}
         className="min-h-screen bg-cream-base flex flex-col items-center justify-center px-6"
       >
-        <Image src="/sorting-hat.png" alt="Sorting Hat" width={80} height={80} className="mb-6" />
+        <Image src="/sorting-hat.png" alt="Sorting Hat" width={320} height={320} className="mb-6" />
         <h2
           className="text-[1.75rem] italic text-ink-primary text-center mb-3"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           You&apos;re all set!
         </h2>
-        <p className="text-sm text-ink-muted text-center">
+        <p className="text-sm text-ink-muted text-center mb-8">
           Your responses have been saved. You&apos;ll hear from us soon.
         </p>
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          className="px-8 h-12 rounded-full bg-purple-primary text-white font-semibold text-base hover:bg-purple-800 transition-colors"
+        >
+          Home
+        </button>
       </motion.div>
     );
   }
-
-  const isLastQuestion = currentIndex === TOTAL - 1;
 
   return (
     <div className="min-h-screen bg-cream-base overflow-hidden">

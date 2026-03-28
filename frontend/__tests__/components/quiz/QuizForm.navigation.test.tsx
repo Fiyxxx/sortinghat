@@ -18,23 +18,23 @@ import QuizForm from '@/components/quiz/QuizForm';
 
 describe('QuizForm navigation', () => {
   it('renders first question on load', () => {
-    render(<QuizForm />);
+    render(<QuizForm nusId="A0000001B" />);
     expect(screen.getByText(/floor group chat/i)).toBeInTheDocument();
   });
 
   it('shows Next button disabled when no answer selected', () => {
-    render(<QuizForm />);
+    render(<QuizForm nusId="A0000001B" />);
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 
   it('enables Next after selecting a multiple-choice option', () => {
-    render(<QuizForm />);
+    render(<QuizForm nusId="A0000001B" />);
     fireEvent.click(screen.getByText(/Send a meme/i));
     expect(screen.getByRole('button', { name: /next/i })).not.toBeDisabled();
   });
 
   it('advances to second question on Next click', async () => {
-    render(<QuizForm />);
+    render(<QuizForm nusId="A0000001B" />);
     fireEvent.click(screen.getByText(/Send a meme/i));
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
     await waitFor(() => {
@@ -43,7 +43,7 @@ describe('QuizForm navigation', () => {
   });
 
   it('shows Back button from question 2 onward', async () => {
-    render(<QuizForm />);
+    render(<QuizForm nusId="A0000001B" />);
     fireEvent.click(screen.getByText(/Send a meme/i));
     fireEvent.click(screen.getByRole('button', { name: /next/i }));
     await waitFor(() => {

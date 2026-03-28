@@ -20,6 +20,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'Sorting Hat | RC Floor Allocation Quiz',
   description: 'Help us create the perfect floor community for you',
+  icons: { icon: '/sortinglogo.svg' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

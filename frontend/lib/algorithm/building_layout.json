@@ -1,0 +1,24 @@
+{
+  "college": "Tembusu / Acacia",
+  "note": "Residential levels L4–L21 (18 floors). L1–L3 are non-residential. L9 and L17 are amenity floors (Pantry / Laundry / Drying Area). Accessible rooms exist ONLY on L9 and L17 (2 each).",
+  "floors": [
+    { "level": 4,  "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 5,  "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 6,  "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 7,  "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 8,  "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 9,  "type": "amenity",  "single": 30, "suite": 8, "accessible": 2, "total": 40 },
+    { "level": 10, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 11, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 12, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 13, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 14, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 15, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 16, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 17, "type": "amenity",  "single": 30, "suite": 8, "accessible": 2, "total": 40 },
+    { "level": 18, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 19, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 20, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 },
+    { "level": 21, "type": "standard", "single": 32, "suite": 8, "accessible": 0, "total": 40 }
+  ]
+}

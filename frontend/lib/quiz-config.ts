@@ -57,7 +57,7 @@ export const quizQuestions: QuizQuestion[] = [
     sliderConfig: {
       min: 0,
       max: 1,
-      step: 0.1,
+      step: 0.01,
       leftLabel: "Not my problem, I'd ignore it",
       rightLabel: "I'd clean it myself and leave a polite note"
     }
@@ -183,35 +183,6 @@ export const quizQuestions: QuizQuestion[] = [
     }
   },
 
-  {
-    id: 'noise_tolerance',
-    section: 'preferences',
-    question: 'How do you feel about noise?',
-    type: 'slider',
-    required: true,
-    sliderConfig: {
-      min: 0,
-      max: 1,
-      step: 0.1,
-      leftLabel: 'I need silence to function',
-      rightLabel: "Noise doesn't bother me at all"
-    }
-  },
-
-  {
-    id: 'aircon_usage',
-    section: 'preferences',
-    question: 'Aircon usage tendency',
-    type: 'select',
-    required: true,
-    options: [
-      { label: 'Heavy user (always on)', value: 'heavy' },
-      { label: 'Moderate (situational)', value: 'moderate' },
-      { label: 'Rarely use', value: 'rarely' },
-      { label: 'No preference', value: 'no_preference' }
-    ]
-  },
-
   // ===== ACCESSIBILITY SECTION =====
   {
     id: 'requires_accessibility',
@@ -232,20 +203,11 @@ export function getQuestionById(id: string) {
   return quizQuestions.find(q => q.id === id);
 }
 
-// NOTE: This file is ~235 lines for 12 questions. For Phase 1, this is acceptable.
-// For Phase 2+, consider splitting by section:
-// - personality-questions.ts
-// - preference-questions.ts
-// - accessibility-questions.ts
-// Or migrating to database-driven questions (see spec: Future Enhancement section).
-
 // Fields that bind directly to QuizFormData top-level (not nested under answers)
 export const DIRECT_FIELDS = new Set<string>([
   'room_type_preference',
   'gender_floor_preference',
   'sleep_schedule',
-  'noise_tolerance',
-  'aircon_usage',
   'hope_to_experience',
   'floor_event_idea',
   'requires_accessibility',

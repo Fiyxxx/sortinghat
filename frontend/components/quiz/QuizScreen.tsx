@@ -42,12 +42,12 @@ export default function QuizScreen({ question, control, direction }: Props) {
       animate="center"
       exit="exit"
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="flex flex-col px-6 pt-16 pb-32 min-h-screen"
+      className="flex flex-col px-6 pt-36 pb-32 min-h-screen"
     >
       <p className="text-xs font-semibold tracking-widest text-ink-muted uppercase mb-6">
         {question.section.toUpperCase()}
       </p>
-      <h2 className="text-[1.375rem] font-bold text-ink-primary mb-8 leading-snug">
+      <h2 className="text-[3.5rem] font-bold text-ink-primary mb-8 leading-snug">
         {question.question}
       </h2>
       {renderQuestion(question, control)}
