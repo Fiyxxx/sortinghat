@@ -477,7 +477,7 @@ function StudentsContent() {
               <AllocHeader field="unit_number"        label="Room"        align="center" />
               <AllocHeader field="room_type_assigned" label="Room Type"   />
               <AllocHeader field="archetype"          label="Archetype"   />
-              <AllocHeader field="floor_score"        label="Floor Score" align="right" />
+              <AllocHeader field="floor_score"        label="Floor Score" align="center" />
               <AllocHeader field="is_locked"          label="🔒"           align="center" />
             </div>
 
@@ -517,7 +517,7 @@ function StudentsContent() {
                           style={{ backgroundColor: ARCHETYPE_COLORS[s.archetype] ?? '#6B7280' }} />
                         <span className="text-ink-primary capitalize text-xs">{s.archetype}</span>
                       </div>
-                      <span className="text-right font-semibold self-center" style={{ color: scoreColor(s.floor_score) }}>
+                      <span className="text-center font-semibold self-center block" style={{ color: scoreColor(s.floor_score) }}>
                         {s.floor_score.toFixed(2)}
                       </span>
                       <span className="text-center self-center text-xs text-ink-muted">
