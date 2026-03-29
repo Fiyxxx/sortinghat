@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 import { QuizFormData, StudentProfile } from '@/lib/types';
 import { quizFormSchema } from '@/lib/validation';
 import { computePersonalityScores } from '@/lib/scoring';
-import { supabase } from '@/lib/supabase';
 import { saveFormDraft, clearFormDraft } from '@/lib/form-storage';
 import { quizQuestions, DIRECT_FIELDS } from '@/lib/quiz-config';
 import QuizHeader from './QuizHeader';
@@ -116,8 +115,15 @@ export default function QuizForm({ nusId, faculty, race }: QuizFormProps) {
         requires_accessibility: data.requires_accessibility || false,
         raw_responses: data.answers,
       };
-      const { error } = await supabase.from('student_profiles').insert(payload);
-      if (error) throw error;
+      const res = await fetch('/api/quiz/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? 'Failed to submit');
+      }
       setSubmitSuccess(true);
       reset();
       clearFormDraft();
